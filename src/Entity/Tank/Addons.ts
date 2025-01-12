@@ -229,6 +229,14 @@ class SmasherAddon extends Addon {
         this.createGuard(6, 1.15, 0, .1);
     }
 }
+/** Smasher addon. */
+class MegaSmasherAddon extends Addon {
+    public constructor(owner: BarrelBase) {
+        super(owner);
+
+        this.createGuard(6, 1.5, 0, .1);
+    }
+}
 /** Landmine addon. */
 class LandmineAddon extends Addon {
     public constructor(owner: BarrelBase) {
@@ -284,7 +292,17 @@ class AutoSmasherAddon extends Addon {
         super(owner);
 
         this.createGuard(6, 1.15, 0, .1);
-        new AutoTurret(owner);
+        
+        const base1 = new AutoTurret(owner, {
+            ...AutoTurretMiniDefinition,
+            offset: -20
+        });
+        base1.turret.styleData.zIndex += 2;
+        const base2 = new AutoTurret(owner, {
+            ...AutoTurretMiniDefinition,
+            offset: 20
+        });
+        base2.turret.styleData.zIndex += 2;
     }
 }
 /** 5 Auto Turrets */
@@ -454,6 +472,7 @@ export const AddonById: Record<addonId, typeof Addon | null> = {
     smasher: SmasherAddon,
     landmine: LandmineAddon,
     autoturret: AutoTurretAddon,
+    megasmasher: MegaSmasherAddon,
     // not part of diep
     weirdspike: WeirdSpikeAddon,
     auto7: Auto7Addon,

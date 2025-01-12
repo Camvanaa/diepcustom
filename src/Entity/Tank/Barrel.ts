@@ -21,6 +21,7 @@ import * as util from "../../util";
 import Bullet from "./Projectile/Bullet";
 import Trap from "./Projectile/Trap";
 import Drone from "./Projectile/Drone";
+import RocketDrone from "./Projectile/RocketDrone";
 import Rocket from "./Projectile/Rocket";
 import Skimmer from "./Projectile/Skimmer";
 import Minion from "./Projectile/Minion";
@@ -61,7 +62,7 @@ export class ShootCycle {
             this.reloadTime = reloadTime;
         }
 
-        const alwaysShoot = (this.barrelEntity.definition.forceFire) || (this.barrelEntity.definition.bullet.type === 'drone') || (this.barrelEntity.definition.bullet.type === 'minion');
+        const alwaysShoot = (this.barrelEntity.definition.forceFire) || (this.barrelEntity.definition.bullet.type === 'drone') || (this.barrelEntity.definition.bullet.type === 'minion') || (this.barrelEntity.definition.bullet.type === 'rocketdrone');
 
         if (this.pos >= reloadTime) {
             // When its not shooting dont shoot, unless its a drone
@@ -183,6 +184,9 @@ export default class Barrel extends ObjectEntity {
                 break;
             case 'drone':
                 new Drone(this, this.tank, tankDefinition, angle);
+                break;
+            case 'rocketdrone':
+                new RocketDrone(this, this.tank, tankDefinition, angle);
                 break;
             case 'necrodrone':
                 new NecromancerSquare(this, this.tank, tankDefinition, angle);
