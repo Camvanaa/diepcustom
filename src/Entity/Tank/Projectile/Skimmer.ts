@@ -29,24 +29,24 @@ import { CameraEntity } from "../../../Native/Camera";
  * Barrel definition for the skimmer skimmer's barrel.
  */
 const SkimmerBarrelDefinition: BarrelDefinition = {
-    angle: Math.PI / 2,
+    angle: 0,
     offset: 0,
-    size: 70,
+    size: 65,
     width: 42,
     delay: 0,
-    reload: 0.35,
-    recoil: 0,
+    reload: 1,
+    recoil: 1,
     isTrapezoid: false,
     trapezoidDirection: 0,
     addon: null,
     bullet: {
         type: "bullet",
-        health: 0.3,
-        damage: 3 / 5,
-        speed: 1.1,
-        scatterRate: 1,
-        lifeLength: 0.25,
         sizeRatio: 1,
+        health: 0.3,
+        damage: 0.6,
+        speed: 0.7,
+        scatterRate: 1,
+        lifeLength: 1,
         absorbtionFactor: 1
     }
 };
@@ -56,7 +56,7 @@ const SkimmerBarrelDefinition: BarrelDefinition = {
  */
 export default class Skimmer extends Bullet implements BarrelBase {
     /** Default speed the skimmer spins */
-    public static BASE_ROTATION = 0.1;
+    public static BASE_ROTATION = 0.15;
 
     /** The skimmer's barrels */
     private skimmerBarrels: Barrel[];
@@ -79,30 +79,20 @@ export default class Skimmer extends Bullet implements BarrelBase {
 
         this.cameraEntity = tank.cameraEntity;
 
-        const skimmerBarrels: Barrel[] = this.skimmerBarrels =[];
+        const skimmerBarrels: Barrel[] = this.skimmerBarrels = [];
 
-        const s1 = new class extends Barrel {
-            // Keep the width constant
-            protected resize() {
-                super.resize();
-                this.physicsData.values.width = this.definition.width
-                // this.physicsData.state.width = 0;
-            }
-        }(this, {...SkimmerBarrelDefinition});
-        const s2Definition = {...SkimmerBarrelDefinition};
-        s2Definition.angle += Math.PI
-        const s2 = new class extends Barrel {
-            // Keep the width constant
-            protected resize() {
-                super.resize();
-                this.physicsData.width = this.definition.width
-            }
-        }(this, s2Definition);
+        for (let i = 0; i < 4; i++) {
+            const angle = (i * 2 * Math.PI) / 4;
+            
+            const s1 = new Barrel(this, {
+                ...SkimmerBarrelDefinition,
+                angle: angle
+            });
 
-        s1.styleData.values.color = this.styleData.values.color;
-        s2.styleData.values.color = this.styleData.values.color;
+            s1.styleData.values.color = this.styleData.values.color;
 
-        skimmerBarrels.push(s1, s2);
+            skimmerBarrels.push(s1);
+        }
 
         this.inputs = new Inputs();
         this.inputs.flags |= InputFlags.leftclick;

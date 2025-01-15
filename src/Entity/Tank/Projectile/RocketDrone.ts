@@ -18,6 +18,7 @@
 
 import Barrel from "../Barrel";
 import Bullet from "./Bullet";
+import TankBody from "../TankBody";
 
 import {InputFlags, PhysicsFlags, StyleFlags} from "../../../Const/Enums";
 import {BarrelDefinition, TankDefinition} from "../../../Const/TankDefinitions";
@@ -37,7 +38,7 @@ const RocketBarrelDefinition: BarrelDefinition = {
     angle: Math.PI,
     offset: 0,
     size: 70,
-    width: 72,
+    width: 50,
     delay: 0,
     reload: 0.15,
     recoil: 3.3,
@@ -45,14 +46,14 @@ const RocketBarrelDefinition: BarrelDefinition = {
     trapezoidDirection: 0,
     addon: null,
     bullet: {
-        type: "bullet",
+        type: "drone",
         health: 0.3,
         damage: 3 / 5,
-        speed: 1.5,
+        speed: 1,
         scatterRate: 5,
-        lifeLength: 0.1,
-        sizeRatio: 1,
-        absorbtionFactor: 1
+        lifeLength: 0.2,
+        sizeRatio: 0.6,
+        absorbtionFactor: 0.1
     }
 };
 export default class RocketDrone extends Bullet {
@@ -87,8 +88,16 @@ export default class RocketDrone extends Bullet {
         this.cameraEntity = tank.cameraEntity;
         
         this.ai = new AI(this);
-        this.ai.viewRange = 1200 * tank.sizeFactor;
-        this.ai.targetFilter = (targetPos) => (targetPos.x - this.tank.positionData.values.x) ** 2 + (targetPos.y - this.tank.positionData.values.y) ** 2 <= this.ai.viewRange ** 2; // (1000 ** 2) 1000 radius
+        this.ai.viewRange = 1250 * tank.sizeFactor;
+        this.ai.targetFilter = (targetPos) => {
+            const entities = this.game.entities.collisionManager.retrieve(targetPos.x, targetPos.y, 1, 1);
+            for (let i = 0; i < entities.length; ++i) {
+                if (entities[i].positionData.values === targetPos && entities[i] instanceof TankBody) {
+                    return true;
+                }
+            }
+            return false;
+        };
         this.canControlDrones = typeof this.barrelEntity.definition.canControlDrones === 'boolean' && this.barrelEntity.definition.canControlDrones;
         this.physicsData.values.sides = bulletDefinition.sides ?? 3;
         if (this.physicsData.values.flags & PhysicsFlags.noOwnTeamCollision) this.physicsData.values.flags ^= PhysicsFlags.noOwnTeamCollision;

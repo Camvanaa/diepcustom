@@ -31,13 +31,15 @@ import TankBody, { BarrelBase } from "./TankBody";
 import { Color, PositionFlags, PhysicsFlags, BarrelFlags, Stat, Tank } from "../../Const/Enums";
 import { BarrelGroup } from "../../Native/FieldGroups";
 import { BarrelDefinition, TankDefinition } from "../../Const/TankDefinitions";
-import { DevTank } from "../../Const/DevTankDefinitions";
 import Flame from "./Projectile/Flame";
 import MazeWall from "../Misc/MazeWall";
 import CrocSkimmer from "./Projectile/CrocSkimmer";
 import { BarrelAddon, BarrelAddonById } from "./BarrelAddons";
 import { Swarm } from "./Projectile/Swarm";
 import NecromancerSquare from "./Projectile/NecromancerSquare";
+import TankProjectile from "./Projectile/Tank";
+import TankDefinitions from "../../Const/TankDefinitions.json";
+import { DevTank } from "../../Const/DevTankDefinitions";
 /**
  * Class that determines when barrels can shoot, and when they can't.
  */
@@ -167,6 +169,30 @@ export default class Barrel extends ObjectEntity {
 
 
         switch (this.definition.bullet.type) {
+            case "tankprojectile":
+                let targetTankDefinition: TankDefinition | null = null;
+                let isDroneMode = 0;
+                
+                if (this.definition.bullet.tankDefinitionId === -1) {
+                    // 过滤掉null和undefined的定义
+                    const validDefinitions = TankDefinitions.filter(t => t != null) as TankDefinition[];
+                    // 随机选择一个tank定义
+                    targetTankDefinition = validDefinitions[Math.floor(Math.random() * validDefinitions.length)] || null;
+                    // 随机选择模式
+                    isDroneMode = Math.random() < 0.5 ? 1 : 0;
+                    console.log("Randomly selected tank definition:", targetTankDefinition?.id, "Mode:", isDroneMode ? "drone" : "bullet");
+                } else {
+                    // 使用指定的tankDefinitionId和模式
+                    targetTankDefinition = (TankDefinitions.find(t => t?.id === this.definition.bullet.tankDefinitionId) as TankDefinition) || null;
+                    isDroneMode = this.definition.bullet.isDroneMode || 0;
+                }
+                
+                if (isDroneMode === 1) {
+                    new TankProjectile(this, this.tank, targetTankDefinition, angle, 0.1, true);
+                } else if (isDroneMode === 0) {
+                    new TankProjectile(this, this.tank, targetTankDefinition, angle, 0.1, false);
+                }
+                break;
             case "skimmer":
                 new Skimmer(this, this.tank, tankDefinition, angle, this.tank.inputs.attemptingRepel() ? -Skimmer.BASE_ROTATION : Skimmer.BASE_ROTATION);
                 break;

@@ -25,10 +25,10 @@ export type postAddonId = "dompronounced" | "auto5" | "auto3" | "autosmasher" | 
 /** The types of post addons that exist in the game, by their id. */
 export type preAddonId = "dombase" | "launcher"
 /** A joint list of all post addon ids and pre addon ids. */
-export type addonId = preAddonId | postAddonId;
+export type addonId = preAddonId | postAddonId | "autotwinsmasher";
 
 /** The types of projectiles in the game */
-export type projectileId = "bullet" | "drone" | "trap" | "necrodrone" | "minion" | "skimmer" | "rocket" | "swarm" | "flame" | "wall" | "croc" | "rocketdrone" ;
+export type projectileId = "bullet" | "drone" | "trap" | "necrodrone" | "minion" | "skimmer" | "rocket" | "swarm" | "flame" | "wall" | "croc" | "rocketdrone" | "tankprojectile" ;
 
 /** The types of barrel addons that exist in the game */
 export type barrelAddonId = "trapLauncher" | "purplebarrel";
@@ -41,9 +41,9 @@ export const visibilityRateDamage = 0.2;
  */
 export interface BulletDefinition {
     /** The type of the bullet that the barrel shoots. */
-    type: projectileId;
+    type: "bullet" | "trap" | "drone" | "necrodrone" | "swarm" | "minion" | "flame" | "wall" | "tank" | "skimmer" | "rocket" | "croc" | "rocketdrone" | "tankprojectile";
     /** Size of the bullet shot out of the barrel in relation to the barrel's size. */
-    sizeRatio: number;
+    sizeRatio?: number;
     /** Used to calculate the health of the bullet that the barrel shoots. */
     health: number;
     /** Used to calculate the damage of the bullet that the barrel shoots. */
@@ -60,6 +60,10 @@ export interface BulletDefinition {
     color?: Color;
     /** Overrides number of sides for projectile. */
     sides?: number;
+    /** The ID of the tank definition associated with this bullet. */
+    tankDefinitionId?: number;
+    /** Whether the drone mode is enabled. */
+    isDroneMode?: number;
 }
 
 /**
@@ -98,6 +102,10 @@ export interface BarrelDefinition {
     color?: Color;
     /** The definition of the bullet that is shot from the barrel. */
     bullet: BulletDefinition;
+    /** The ID of the tank definition associated with this bullet. */
+    tankDefinitionId?: number;
+    /** Whether the drone mode is enabled. */
+    isDroneMode?: number;
 }
 /**
  * Format that the game stores stat definitions in its memory.

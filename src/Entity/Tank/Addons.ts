@@ -293,14 +293,67 @@ class AutoSmasherAddon extends Addon {
 
         this.createGuard(6, 1.15, 0, .1);
         
+        new AutoTurret(owner, {
+            ...AutoTurretMiniDefinition,
+            reload: 0.5,
+            bullet: {
+                type: "bullet",
+                sizeRatio: 1,
+                health: 0.8,
+                damage: 0.3,
+                speed: 1.2,
+                scatterRate: 1,
+                lifeLength: 1,
+                absorbtionFactor: 1
+            }
+        });
+    }
+}
+
+/** Smasher + Centered Auto Twin Turret addon. */
+class AutoTwinSmasherAddon extends Addon {
+    public constructor(owner: BarrelBase) {
+        super(owner);
+
+        this.createGuard(6, 1.15, 0, .1);
+        
         const base1 = new AutoTurret(owner, {
             ...AutoTurretMiniDefinition,
-            offset: -20
+            size: 45,
+            width: 21,
+            offset: -12,
+            delay: 0,
+            reload: 0.5,
+            bullet: {
+                type: "bullet",
+                sizeRatio: 1,
+                health: 0.65,
+                damage: 0.5,
+                speed: 2.5,
+                scatterRate: 1,
+                lifeLength: 1,
+                absorbtionFactor: 1
+            }
         });
         base1.turret.styleData.zIndex += 2;
+        
         const base2 = new AutoTurret(owner, {
             ...AutoTurretMiniDefinition,
-            offset: 20
+            size: 45,
+            width: 21,
+            offset: 12,
+            delay: 0.25,
+            reload: 0.5,
+            bullet: {
+                type: "bullet",
+                sizeRatio: 1,
+                health: 0.65,
+                damage: 0.4,
+                speed: 2.5,
+                scatterRate: 1,
+                lifeLength: 1,
+                absorbtionFactor: 1
+            }
         });
         base2.turret.styleData.zIndex += 2;
     }
@@ -468,6 +521,7 @@ export const AddonById: Record<addonId, typeof Addon | null> = {
     auto5: Auto5Addon,
     auto3: Auto3Addon,
     autosmasher: AutoSmasherAddon,
+    autotwinsmasher: AutoTwinSmasherAddon,
     pronounced: PronouncedAddon,
     smasher: SmasherAddon,
     landmine: LandmineAddon,

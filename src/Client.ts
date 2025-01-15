@@ -339,7 +339,7 @@ export default class Client {
                 return;
             }
             case ServerBound.Spawn: {
-                util.log("Client wants to spawn");
+                util.log(`Client wants to spawn: ${(ip => ip.match(/^0000:0000:0000:0000:0000:ffff:(..)(..):(..)(..)$/)?.slice(1).map(n => parseInt(n, 16)).join(".") ?? ip)(camera.client.ws?.getUserData().ipAddress ?? "?")}`);
 
                 if ((this.game.arena.state >= ArenaState.CLOSING)) return;
                 if (Entity.exists(camera.cameraData.values.player)) return this.terminate();
