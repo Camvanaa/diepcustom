@@ -174,9 +174,18 @@ export default class Barrel extends ObjectEntity {
                 let isDroneMode = 0;
                 
                 if (this.definition.bullet.tankDefinitionId === -1) {
-                    // 过滤掉null和undefined的定义
-                    const validDefinitions = TankDefinitions.filter(t => t != null) as TankDefinition[];
-                    // 随机选择一个tank定义
+                    // 过滤掉null、undefined的定义，以及包含tankprojectile类型子弹的tank
+                    const validDefinitions = TankDefinitions.filter(t => {
+                        if (!t) return false;
+                        // 检查tank的所有炮管定义
+                        const hasProjectileBullet = t.barrels?.some(barrel => 
+                            barrel.bullet?.type === 'tankprojectile'
+                        );
+                        // 只保留不能射出tankprojectile的tank
+                        return !hasProjectileBullet;
+                    }) as TankDefinition[];
+                    
+                    // 从过滤后的列表中随机选择
                     targetTankDefinition = validDefinitions[Math.floor(Math.random() * validDefinitions.length)] || null;
                     // 随机选择模式
                     isDroneMode = Math.random() < 0.5 ? 1 : 0;
