@@ -336,7 +336,28 @@ export default class TankProjectile extends Bullet implements BarrelBase {
         }
     }
 
+    public destroy(animate = true) {
+        // 如果是无人机模式，减少无人机计数
+        if (this.isDroneMode && !animate) {
+            this.barrelEntity.droneCount -= 1;
+        }
+
+        // 确保所有子炮管都被销毁
+        for (const barrel of this.tankBarrels) {
+            barrel.destroy();
+        }
+
+        // 立即销毁，不等待动画
+        super.destroy(animate);
+    }
+
     public tick(tick: number): void {
+        // 检查 tank 是否已经死亡或被删除
+        if (!Entity.exists(this.tank) || this.tank.inputs.deleted) {
+            this.destroy(false);  // 使用 false 来立即销毁，不等待动画
+            return;
+        }
+
         if (this.isDroneMode) {
             this.tickDroneMode(tick);
         } else {
