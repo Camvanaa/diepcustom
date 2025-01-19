@@ -58,12 +58,12 @@ export default class Crasher extends AbstractShape {
         this.ai = new AI(this);
         this.ai.viewRange = 2000;
         this.ai.aimSpeed = (this.ai.movementSpeed = this.targettingSpeed);
+        this.ai.doAimPrediction = true;
         this.ai['_findTargetInterval'] = tps;
     }
 
     tick(tick: number) {
-        this.ai.aimSpeed = 0;
-        this.ai.movementSpeed = this.targettingSpeed;
+        this.ai.movementSpeed = this.targettingSpeed / 20;
         
         if (this.ai.state === AIState.idle) {
             this.doIdleRotate = true;

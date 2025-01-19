@@ -27,6 +27,7 @@ import { Entity } from "../../Native/Entity";
 import { NameGroup } from "../../Native/FieldGroups";
 import LivingEntity from "../Live";
 import { CameraEntity } from "../../Native/Camera";
+import { AddonBarrelDefinitions } from "./Addons";
 
 export const AutoTurretDefinition: BarrelDefinition = {
     angle: 0,
@@ -79,8 +80,10 @@ export default class AutoTurret extends ObjectEntity {
     /** The size of the auto turret base */
     public baseSize: number;
 
-    public constructor(owner: BarrelBase, turretDefinition: BarrelDefinition = AutoTurretDefinition, baseSize: number = 25) {
+    public constructor(owner: BarrelBase, barrelDefinition: BarrelDefinition = AddonBarrelDefinitions['AutoTurretAddon_turretDefinition']) {
         super(owner.game);
+
+        //console.log('AutoTurret constructor using definition with reload:', barrelDefinition.reload);
 
         this.cameraEntity = owner.cameraEntity;
         this.ai = new AI(this);
@@ -95,7 +98,7 @@ export default class AutoTurret extends ObjectEntity {
         this.relationsData.values.team = owner.relationsData.values.team;
 
         this.physicsData.values.sides = 1;
-        this.baseSize = baseSize;
+        this.baseSize = 25;
         this.physicsData.values.size = this.baseSize * this.sizeFactor;
 
         this.styleData.values.color = Color.Barrel;
@@ -106,7 +109,14 @@ export default class AutoTurret extends ObjectEntity {
         this.nameData.values.name = "Mounted Turret";
         this.nameData.values.flags |= NameFlags.hiddenName;
 
-        this.turret = new Barrel(this, turretDefinition);
+        const barrel = new Barrel(this, {
+            ...barrelDefinition,
+            reload: barrelDefinition.reload
+        });
+
+        //console.log('Created barrel with reload:', barrel.definition.reload);
+
+        this.turret = barrel;
         this.turret.physicsData.values.flags |= PhysicsFlags.doChildrenCollision;
     }
     

@@ -25,6 +25,7 @@ import GameServer from "./Game";
 import TankDefinitions from "./Const/TankDefinitions";
 import { commandDefinitions } from "./Const/Commands";
 import { ColorsHexCode } from "./Const/Enums";
+import { BUILD } from "./config";
 
 const PORT = config.serverPort;
 const ENABLE_API = config.enableApi && config.apiLocation;
@@ -130,9 +131,17 @@ app.get("/*", (res, req) => {
                 file = config.clientLocation + "/config.js";
                 contentType = "application/javascript";
                 break;
+            /*case "/chat.js":
+                file = config.clientLocation + "/chat.js";
+                contentType = "application/javascript";
+                break;*/
+            case `/build_${BUILD}.wasm`:
+                file = config.clientLocation + `/build_${BUILD}.wasm`;
+                contentType = "application/wasm";
+                break;
         }
 
-        res.writeHeader("Content-Type", contentType + "; charset=utf-8");
+        res.writeHeader("Content-Type", contentType);
 
         if (file && fs.existsSync(file)) {
             res.writeStatus("200 OK").end(fs.readFileSync(file));

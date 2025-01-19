@@ -334,7 +334,7 @@ Module.todo.push([() => {
     Module.status = "FETCH";
     // fetch necessary info and build
     return [
-        fetch(`${CDN}build_${BUILD}.wasm.wasm`).then(res => res.arrayBuffer()),
+        fetch(`/build_${BUILD}.wasm`).then(res => res.arrayBuffer()),
         fetch(`${API_URL}servers`).then(res => res.json()),
         fetch(`${API_URL}tanks`).then(res => res.json())
     ];
@@ -1308,7 +1308,7 @@ class ASMConsts {
         if(ws.events.length === 0) return null;
         const event = ws.events.shift();
         Module.HEAPU32[msg >> 2] = event[1]; // packet ptr
-        Module.HEAP32[length >> 2] = event[2]; // packet length
+        Module.HEAPU32[length >> 2] = event[2]; // packet length
         return event[0]; // type
     }
 

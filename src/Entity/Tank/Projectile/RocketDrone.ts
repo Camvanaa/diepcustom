@@ -41,7 +41,7 @@ const RocketBarrelDefinition: BarrelDefinition = {
     width: 50,
     delay: 0,
     reload: 0.15,
-    recoil: 3.3,
+    recoil: 3.5,
     isTrapezoid: true,
     trapezoidDirection: 0,
     addon: null,

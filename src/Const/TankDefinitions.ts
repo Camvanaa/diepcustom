@@ -64,6 +64,8 @@ export interface BulletDefinition {
     tankDefinitionId?: number;
     /** Whether the drone mode is enabled. */
     isDroneMode?: number;
+    /** The base rotation of the projectile. */
+    baseRotation?: number;
 }
 
 /**
@@ -106,6 +108,8 @@ export interface BarrelDefinition {
     tankDefinitionId?: number;
     /** Whether the drone mode is enabled. */
     isDroneMode?: number;
+    /** The base rotation of the projectile. */
+    baseRotation?: number;
 }
 /**
  * Format that the game stores stat definitions in its memory.

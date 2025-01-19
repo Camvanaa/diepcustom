@@ -171,7 +171,11 @@ export default class Barrel extends ObjectEntity {
         switch (this.definition.bullet.type) {
             case "tankprojectile":
                 let targetTankDefinition: TankDefinition | null = null;
-                let isDroneMode = 0;
+                let isDroneMode = this.definition.bullet.isDroneMode !== undefined ? this.definition.bullet.isDroneMode : 0;
+                let baseRotation = this.definition.bullet.baseRotation !== undefined ? this.definition.bullet.baseRotation : TankProjectile.BASE_ROTATION;
+                
+                //console.log("isDroneMode:", isDroneMode);
+                //console.log("Random mode result:", isDroneMode === -1 ? (Math.random() < 0.5 ? "drone" : "bullet") : "fixed");
                 
                 if (this.definition.bullet.tankDefinitionId === -1) {
                     // 过滤掉null、undefined的定义，以及包含tankprojectile类型子弹的tank
@@ -188,18 +192,19 @@ export default class Barrel extends ObjectEntity {
                     // 从过滤后的列表中随机选择
                     targetTankDefinition = validDefinitions[Math.floor(Math.random() * validDefinitions.length)] || null;
                     // 随机选择模式
-                    isDroneMode = Math.random() < 0.5 ? 1 : 0;
-                    console.log("Randomly selected tank definition:", targetTankDefinition?.id, "Mode:", isDroneMode ? "drone" : "bullet");
+                    //console.log("Randomly selected tank definition:", targetTankDefinition?.id, "Mode:", isDroneMode ? "drone" : "bullet");
                 } else {
                     // 使用指定的tankDefinitionId和模式
                     targetTankDefinition = (TankDefinitions.find(t => t?.id === this.definition.bullet.tankDefinitionId) as TankDefinition) || null;
-                    isDroneMode = this.definition.bullet.isDroneMode || 0;
+                    isDroneMode = this.definition.bullet.isDroneMode !== undefined ? this.definition.bullet.isDroneMode : 0;
                 }
                 
                 if (isDroneMode === 1) {
-                    new TankProjectile(this, this.tank, targetTankDefinition, angle, 0.1, true);
+                    new TankProjectile(this, this.tank, targetTankDefinition, angle, baseRotation, true);
                 } else if (isDroneMode === 0) {
-                    new TankProjectile(this, this.tank, targetTankDefinition, angle, 0.1, false);
+                    new TankProjectile(this, this.tank, targetTankDefinition, angle, baseRotation, false);
+                } else if (isDroneMode === -1){
+                    new TankProjectile(this, this.tank, targetTankDefinition, angle, baseRotation, Math.random() < 0.5 ? true : false);
                 }
                 break;
             case "skimmer":

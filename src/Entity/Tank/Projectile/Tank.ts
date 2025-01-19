@@ -34,6 +34,7 @@ import { TankDefinition } from "../../../Const/TankDefinitions";
 import { Inputs } from "../../AI";
 import { BarrelBase } from "../TankBody";
 import { CameraEntity } from "../../../Native/Camera";
+import { AddonById, AddonBarrelDefinitions, modifyAddonBarrelDefinition } from "../Addons";
 
 /**
  * 代表游戏中的坦克形子弹
@@ -43,6 +44,7 @@ import { CameraEntity } from "../../../Native/Camera";
  * 参数提示
  * "tankDefinitionId" 是tank定义的ID,-1表示随机tankdefinition
  * "isDroneMode" 是是否为drone模式,-1表示随机drone或者bullet模式
+ * "baseRotation" 是子弹的初始旋转速度
  */
 export default class TankProjectile extends Bullet implements BarrelBase {
     /** 默认旋转速度 */
@@ -67,16 +69,17 @@ export default class TankProjectile extends Bullet implements BarrelBase {
     /** 无人机是否在休息状态 */
     private restCycle = true;
     /** 是否为无人机模式 */
-    private readonly isDroneMode: boolean;
+    private readonly isDroneMode: boolean = true;
 
     public constructor(
         barrel: Barrel, 
         tank: BarrelBase, 
         tankDefinition: TankDefinition | null, 
         shootAngle: number, 
-        direction: number, 
+        direction: number = barrel.definition.bullet.baseRotation || TankProjectile.BASE_ROTATION,
         isDroneMode: boolean = false
     ) {
+        
         super(barrel, tank, tankDefinition, shootAngle);
         
         this.isDroneMode = isDroneMode;
@@ -96,7 +99,7 @@ export default class TankProjectile extends Bullet implements BarrelBase {
         tank: BarrelBase, 
         tankDefinition: TankDefinition | null, 
         shootAngle: number, 
-        direction: number
+        direction: number = barrel.definition.bullet.baseRotation || TankProjectile.BASE_ROTATION
     ): void {
         const bulletDefinition = barrel.definition.bullet;
 
@@ -123,19 +126,61 @@ export default class TankProjectile extends Bullet implements BarrelBase {
     private setupSpeed(barrel: Barrel): void {
         if (this.isDroneMode) {
             this.baseSpeed = barrel.bulletAccel / 3;
-            this.baseAccel = 20;
+            this.baseAccel = barrel.bulletAccel;
         } else {
             this.baseSpeed = barrel.bulletAccel + 30;
-            this.baseAccel = 20;
+            this.baseAccel = barrel.bulletAccel * 6;
         }
     }
 
     private createBarrels(tankDefinition: TankDefinition | null): void {
-        if (tankDefinition?.barrels) {
+        if (!tankDefinition) return;
+        
+        // 修改所有炮管的装填时间的辅助函数
+        const modifyBarrelDef = (barrelDef: any) => {
+            if (!barrelDef) return barrelDef;
+            return {
+                ...barrelDef,
+                reload: barrelDef.reload * 2
+            };
+        };
+        
+        // 首先创建preAddon（如果存在）
+        if (tankDefinition.preAddon) {
+            const PreAddonConstructor = AddonById[tankDefinition.preAddon];
+            if (PreAddonConstructor) {
+                //console.log('Creating preAddon');
+                modifyAddonBarrelDefinition(2);  // 将装填时间加倍
+                new PreAddonConstructor(this);
+                modifyAddonBarrelDefinition(0.5);  // 恢复原始值
+            }
+        }
+
+        // 创建主炮管
+        if (tankDefinition.barrels) {
             for (const barrelDefinition of tankDefinition.barrels) {
-                const newBarrel = new Barrel(this, { ...barrelDefinition });
+                const modifiedBarrelDef = modifyBarrelDef(barrelDefinition);
+                //console.log('Creating main barrel with reload:', modifiedBarrelDef.reload);
+                const newBarrel = new Barrel(this, modifiedBarrelDef);
                 newBarrel.styleData.values.color = this.styleData.values.color;
                 this.tankBarrels.push(newBarrel);
+            }
+        }
+
+        // 最后创建postAddon（如果存在）
+        if (tankDefinition.postAddon) {
+            const PostAddonConstructor = AddonById[tankDefinition.postAddon];
+            if (PostAddonConstructor) {
+                //console.log('Creating postAddon:', tankDefinition.postAddon);
+                const def = AddonBarrelDefinitions['AutoTurretAddon_turretDefinition'];
+                //console.log('Current definition before modification:', def);
+                
+                modifyAddonBarrelDefinition(2);
+                new PostAddonConstructor(this);
+                //console.log('Definition on postAddon creation:', AddonBarrelDefinitions['AutoTurretAddon_turretDefinition']);
+                modifyAddonBarrelDefinition(0.5);
+                
+                //console.log('Definition after postAddon creation:', AddonBarrelDefinitions['AutoTurretAddon_turretDefinition']);
             }
         }
     }
@@ -316,17 +361,9 @@ export default class TankProjectile extends Bullet implements BarrelBase {
     }
 
     private tickNormalMode(tick: number): void {
-        super.tick(tick);
+        super.tick(tick);  // 让父类处理速度控制
 
-        if (tick === this.spawnTick + 1) {
-            this.addAcceleration(this.movementAngle, this.baseSpeed);
-        } else {
-            this.maintainVelocity(
-                this.usePosAngle ? this.positionData.values.angle : this.movementAngle,
-                this.baseAccel
-            );
-        }
-
+        // 只保留生命周期和团队相关的检查
         if (tick - this.spawnTick >= this.lifeLength) {
             this.destroy(true);
         }
@@ -352,6 +389,12 @@ export default class TankProjectile extends Bullet implements BarrelBase {
     }
 
     public tick(tick: number): void {
+        this.reloadTime = this.tank.reloadTime;
+        // 只有当 rotationPerTick 不为 0 时才旋转
+        if (this.rotationPerTick !== 0) {
+            this.positionData.angle += this.rotationPerTick;
+        }
+        
         // 检查 tank 是否已经死亡或被删除
         if (!Entity.exists(this.tank) || this.tank.inputs.deleted) {
             this.destroy(false);  // 使用 false 来立即销毁，不等待动画

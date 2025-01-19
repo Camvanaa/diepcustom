@@ -70,6 +70,40 @@
             border: 0;
             outline: none;
           }
+
+          .chat-box {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            padding: 10px;
+          }
+
+          .message-area {
+            height: 150px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            color: white;
+          }
+
+          .chat-input {
+            width: 100%;
+            padding: 5px;
+            border: none;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.9);
+          }
+
+          .chat-message {
+            margin: 5px 0;
+          }
+
+          .sender {
+            color: #FFEB3B;
+            font-weight: bold;
+          }
         </style>
 
         <link href="https://fonts.googleapis.com/css?family=Ubuntu:700" rel="stylesheet" type="text/css" />
@@ -88,5 +122,13 @@
         <script src="./input.js"></script>
         <script src="./dma.js"></script>
         <script src="./loader.js"></script>
+
+        <!--<script type="module">
+            import { ChatSystem } from './chat.js';
+            window.addEventListener('DOMContentLoaded', () => {
+                console.log("Initializing chat system");
+                const chat = new ChatSystem();
+            });
+        </script>-->
     </body>
 </html>

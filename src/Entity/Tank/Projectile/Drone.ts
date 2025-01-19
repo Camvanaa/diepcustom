@@ -73,6 +73,7 @@ export default class Drone extends Bullet {
         barrel.droneCount += 1;
 
         this.ai.movementSpeed = this.ai.aimSpeed = this.baseAccel;
+        this.ai.doAimPrediction = true;
     }
 
     /** Extends LivingEntity.destroy - so that the drone count decreases for the barrel. */
@@ -97,6 +98,7 @@ export default class Drone extends Bullet {
                 y: this.positionData.values.y - this.tank.positionData.values.y
             }
             const base = this.baseAccel;
+            this.ai.movementSpeed = this.baseAccel;
 
             // still a bit inaccurate, works though
             let unitDist = (delta.x ** 2 + delta.y ** 2) / Drone.MAX_RESTING_RADIUS;

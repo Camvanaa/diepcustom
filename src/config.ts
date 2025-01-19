@@ -102,3 +102,5 @@ export const defaultAccessLevel: AccessLevel = AccessLevel.BetaAccess;
 
 /** Maximum level that player tanks can have. Default: 45 */
 export const maxPlayerLevel = 45;
+
+export const BUILD = "6f59094d60f98fafc14371671d3ff31ef4d75d9e";

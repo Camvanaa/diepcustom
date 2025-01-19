@@ -71,11 +71,13 @@ export class Addon {
         rotator.turrets = [];
 
         const ROT_OFFSET = 0.8;
+        const currentDef = { ...AddonBarrelDefinitions['AutoTurretAddon_turretDefinition'] };
+        //console.log('Creating auto turrets with definition:', currentDef);
 
         if (rotator.styleData.values.flags & StyleFlags.isVisible) rotator.styleData.values.flags ^= StyleFlags.isVisible;
 
         for (let i = 0; i < count; ++i) {
-            const base = new AutoTurret(rotator, AutoTurretMiniDefinition);
+            const base = new AutoTurret(rotator, currentDef);
             base.influencedByOwnerInputs = true;
 
             const angle = base.ai.inputs.mouse.angle = PI2 * (i / count);
@@ -112,8 +114,54 @@ export class Addon {
     }
 }
 
+/** 用于存储所有 addon 的 barrel 定义的映射 */
+export const AddonBarrelDefinitions: Record<string, BarrelDefinition> = {};
 
-const AutoTurretMiniDefinition: BarrelDefinition = {
+/** 辅助函数：从类中提取 barrel 定义并存储 */
+function extractBarrelDefinitions(AddonClass: any) {
+    // 只提取类的静态属性和原型上的定义
+    const prototype = AddonClass.prototype;
+    for (const key in prototype) {
+        if (key.toLowerCase().includes('definition') && typeof prototype[key] === 'object') {
+            const defName = `${AddonClass.name}_${key}`;
+            AddonBarrelDefinitions[defName] = prototype[key];
+            //console.log('Extracted definition:', defName);
+        }
+    }
+    
+    // 如果没有找到定义，使用默认值
+    if (!AddonBarrelDefinitions['AutoTurretAddon_turretDefinition']) {
+        //console.log('Using default definition');
+        AddonBarrelDefinitions['AutoTurretAddon_turretDefinition'] = DefaultAutoTurretDefinition;
+    }
+}
+
+/** 默认的 AutoTurret 定义 */
+const DefaultAutoTurretDefinition: BarrelDefinition = {
+    angle: 0,
+    offset: 0,
+    size: 55,
+    width: 42 * 0.7,
+    delay: 0.01,
+    reload: 1,
+    recoil: 0.3,
+    isTrapezoid: false,
+    trapezoidDirection: 0,
+    addon: null,
+    bullet: {
+        type: "bullet",
+        health: 1,
+        damage: 0.4,
+        speed: 1.2,
+        scatterRate: 1,
+        lifeLength: 1,
+        sizeRatio: 1,
+        absorbtionFactor: 1
+    }
+};
+
+// 导出常用的定义作为快捷方式
+export const AutoTurretMiniDefinition = AddonBarrelDefinitions['AutoTurretAddon_turretDefinition'] || {
     angle: 0,
     offset: 0,
     size: 55,
@@ -286,27 +334,27 @@ class AutoTurretAddon extends Addon {
     }
 }
 
-/** Smasher + Centered Auto Turret addon. */
+/** Auto Smasher addon. */
 class AutoSmasherAddon extends Addon {
+    private readonly turretDefinition: BarrelDefinition = {
+        ...AutoTurretMiniDefinition,
+        reload: 0.5,
+        bullet: {
+            type: "bullet",
+            sizeRatio: 1,
+            health: 0.8,
+            damage: 0.3,
+            speed: 1.2,
+            scatterRate: 1,
+            lifeLength: 1,
+            absorbtionFactor: 1
+        }
+    };
+
     public constructor(owner: BarrelBase) {
         super(owner);
-
         this.createGuard(6, 1.15, 0, .1);
-        
-        new AutoTurret(owner, {
-            ...AutoTurretMiniDefinition,
-            reload: 0.5,
-            bullet: {
-                type: "bullet",
-                sizeRatio: 1,
-                health: 0.8,
-                damage: 0.3,
-                speed: 1.2,
-                scatterRate: 1,
-                lifeLength: 1,
-                absorbtionFactor: 1
-            }
-        });
+        new AutoTurret(owner, this.turretDefinition);
     }
 }
 
@@ -533,4 +581,34 @@ export const AddonById: Record<addonId, typeof Addon | null> = {
     auto2: Auto2Addon,
     autorocket: AutoRocketAddon,
     spiesk: SpieskAddon,
+}
+
+// 自动提取所有 addon 类中的 barrel 定义
+for (const [addonName, AddonClass] of Object.entries(AddonById)) {
+    if (AddonClass) {
+        try {
+            extractBarrelDefinitions(AddonClass);
+        } catch (e) {
+            //console.warn(`Failed to extract barrel definitions from ${addonName}:`, e);
+        }
+    }
+}
+
+/** 修改 barrel 定义的 reload 值 */
+export function modifyAddonBarrelDefinition(multiplier: number) {
+    const def = AddonBarrelDefinitions['AutoTurretAddon_turretDefinition'];
+    if (def) {
+        //console.log('Before modification:', def.reload);
+        def.reload *= multiplier;
+        //console.log('After modification:', def.reload, 'multiplier:', multiplier);
+        
+        // 强制更新所有引用这个定义的地方
+        for (const [key, value] of Object.entries(AddonBarrelDefinitions)) {
+            if (value === def || (value && value.reload === def.reload / multiplier)) {
+                AddonBarrelDefinitions[key] = { ...def };
+            }
+        }
+    } else {
+        //console.log('Definition not found');
+    }
 }
