@@ -261,6 +261,19 @@ class SpikeAddon extends Addon {
         this.createGuard(3, 1.3, Math.PI / 2, 0.17);
     }
 }
+/** Cells addon. */
+class CellAddon extends Addon {
+    public constructor(owner: BarrelBase) {
+        super(owner);
+
+        this.createGuard(6, 1.15, 0, 0.1);
+        this.createGuard(6, 1.15, Math.PI / 12, 0.1);
+        this.createGuard(6, 1.15, Math.PI / 6, 0.1);
+        this.createGuard(6, 1.15, Math.PI / 4, 0.1);
+        this.createGuard(6, 1.15, Math.PI / 3, 0.1);
+        this.createGuard(6, 1.15, Math.PI / 2, 0.1);
+    }
+}
 /** Dominator's Base addon. */
 class DomBaseAddon extends Addon {
     public constructor(owner: BarrelBase) {
@@ -575,6 +588,7 @@ export const AddonById: Record<addonId, typeof Addon | null> = {
     landmine: LandmineAddon,
     autoturret: AutoTurretAddon,
     megasmasher: MegaSmasherAddon,
+    cell: CellAddon,
     // not part of diep
     weirdspike: WeirdSpikeAddon,
     auto7: Auto7Addon,

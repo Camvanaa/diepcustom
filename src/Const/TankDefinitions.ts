@@ -21,17 +21,17 @@ import { Tank, Color } from "./Enums";
 import _TankDefinitions from "./TankDefinitions.json";
 
 /** The types of post addons that exist in the game, by their id. */
-export type postAddonId = "dompronounced" | "auto5" | "auto3" | "autosmasher" | "spike" | "pronounced" | "smasher" | "megasmasher" | "landmine" | "autoturret" | "weirdspike" | "auto2" | "auto7" | "autorocket" | "spiesk" | "megasmasher"
+export type postAddonId = "dompronounced" | "auto5" | "auto3" | "autosmasher" | "spike" | "pronounced" | "smasher" | "cell" | "megasmasher" | "landmine" | "autoturret" | "weirdspike" | "auto2" | "auto7" | "autorocket" | "spiesk" | "megasmasher"
 /** The types of post addons that exist in the game, by their id. */
 export type preAddonId = "dombase" | "launcher"
 /** A joint list of all post addon ids and pre addon ids. */
 export type addonId = preAddonId | postAddonId | "autotwinsmasher";
 
 /** The types of projectiles in the game */
-export type projectileId = "bullet" | "drone" | "trap" | "necrodrone" | "minion" | "skimmer" | "rocket" | "swarm" | "flame" | "wall" | "croc" | "rocketdrone" | "tankprojectile" ;
+export type projectileId = "bullet" | "drone" | "trap" | "necrodrone" | "minion" | "skimmer" | "rocket" | "swarm" | "flame" | "wall" | "croc" | "rocketdrone" | "tankprojectile" | "split";
 
 /** The types of barrel addons that exist in the game */
-export type barrelAddonId = "trapLauncher" | "purplebarrel";
+export type barrelAddonId = "trapLauncher" | "purplebarrel" ;
 
 /** Increase in opacity when taking damage. */
 export const visibilityRateDamage = 0.2;
@@ -41,7 +41,7 @@ export const visibilityRateDamage = 0.2;
  */
 export interface BulletDefinition {
     /** The type of the bullet that the barrel shoots. */
-    type: "bullet" | "trap" | "drone" | "necrodrone" | "swarm" | "minion" | "flame" | "wall" | "tank" | "skimmer" | "rocket" | "croc" | "rocketdrone" | "tankprojectile";
+    type: "bullet" | "trap" | "drone" | "necrodrone" | "swarm" | "minion" | "flame" | "wall" | "tank" | "skimmer" | "rocket" | "croc" | "rocketdrone" | "tankprojectile" | "split";
     /** Size of the bullet shot out of the barrel in relation to the barrel's size. */
     sizeRatio?: number;
     /** Used to calculate the health of the bullet that the barrel shoots. */
@@ -66,6 +66,13 @@ export interface BulletDefinition {
     isDroneMode?: number;
     /** The base rotation of the projectile. */
     baseRotation?: number;
+    /** 分裂参数 */
+    splitParams?: {
+        maxSplitCount: number;
+        splitBulletCount: number;
+        splitAngle: number;
+        sizeRatio?: number;
+    };
 }
 
 /**

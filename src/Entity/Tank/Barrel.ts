@@ -40,6 +40,7 @@ import NecromancerSquare from "./Projectile/NecromancerSquare";
 import TankProjectile from "./Projectile/Tank";
 import TankDefinitions from "../../Const/TankDefinitions.json";
 import { DevTank } from "../../Const/DevTankDefinitions";
+import Split from "./Projectile/Split";
 /**
  * Class that determines when barrels can shoot, and when they can't.
  */
@@ -64,7 +65,19 @@ export class ShootCycle {
             this.reloadTime = reloadTime;
         }
 
-        const alwaysShoot = (this.barrelEntity.definition.forceFire) || (this.barrelEntity.definition.bullet.type === 'drone') || (this.barrelEntity.definition.bullet.type === 'minion') || (this.barrelEntity.definition.bullet.type === 'rocketdrone');
+        const alwaysShoot = (this.barrelEntity.definition.forceFire) || 
+            (this.barrelEntity.definition.bullet.type === 'drone') || 
+            (this.barrelEntity.definition.bullet.type === 'minion') || 
+            (this.barrelEntity.definition.bullet.type === 'rocketdrone');
+
+        /*console.log('Barrel tick:', {
+            pos: this.pos,
+            reloadTime: reloadTime,
+            bulletType: this.barrelEntity.definition.bullet.type,
+            alwaysShoot: alwaysShoot,
+            attemptingShot: this.barrelEntity.attemptingShot,
+            droneCount: this.barrelEntity.droneCount
+        });*/
 
         if (this.pos >= reloadTime) {
             // When its not shooting dont shoot, unless its a drone
@@ -74,6 +87,13 @@ export class ShootCycle {
             }
             // When it runs out of drones, dont shoot
             if (typeof this.barrelEntity.definition.droneCount === 'number' && this.barrelEntity.droneCount >= this.barrelEntity.definition.droneCount) {
+                /*console.log('Drone limit check:', {
+                    hasDroneCount: typeof this.barrelEntity.definition.droneCount === 'number',
+                    definitionCount: this.barrelEntity.definition.droneCount,
+                    currentCount: this.barrelEntity.droneCount,
+                    bulletType: this.barrelEntity.definition.bullet.type,
+                    condition: this.barrelEntity.droneCount >= this.barrelEntity.definition.droneCount
+                });*/
                 this.pos = reloadTime;
                 return;
             }
@@ -179,14 +199,15 @@ export default class Barrel extends ObjectEntity {
                 
                 if (this.definition.bullet.tankDefinitionId === -1) {
                     // 过滤掉null、undefined的定义，以及包含tankprojectile类型子弹的tank
+                    // 同时确保levelRequirement为45
                     const validDefinitions = TankDefinitions.filter(t => {
                         if (!t) return false;
                         // 检查tank的所有炮管定义
                         const hasProjectileBullet = t.barrels?.some(barrel => 
                             barrel.bullet?.type === 'tankprojectile'
                         );
-                        // 只保留不能射出tankprojectile的tank
-                        return !hasProjectileBullet;
+                        // 只保留不能射出tankprojectile的tank且levelRequirement为45的tank
+                        return !hasProjectileBullet && t.levelRequirement === 45;
                     }) as TankDefinition[];
                     
                     // 从过滤后的列表中随机选择
@@ -250,6 +271,16 @@ export default class Barrel extends ObjectEntity {
             case "croc": 
                 new CrocSkimmer(this, this.tank, tankDefinition, angle);
                 break;
+            case 'split': {
+                const splitParams = {
+                    maxSplitCount: this.definition.bullet.splitParams?.maxSplitCount,
+                    splitBulletCount: this.definition.bullet.splitParams?.splitBulletCount,
+                    splitAngle: this.definition.bullet.splitParams?.splitAngle,
+                    sizeRatio: this.definition.bullet.splitParams?.sizeRatio
+                };
+                new Split(this, this.tank, tankDefinition, angle, splitParams);
+                break;
+            }
             default:
                 util.log('Ignoring attempt to spawn projectile of type ' + this.definition.bullet.type);
                 break;

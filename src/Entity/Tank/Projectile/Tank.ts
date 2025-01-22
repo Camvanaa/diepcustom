@@ -204,11 +204,16 @@ export default class TankProjectile extends Bullet implements BarrelBase {
     private setupDroneAI(tank: BarrelBase): void {
         this.ai.viewRange = 850 * tank.sizeFactor;
         this.ai.targetFilter = (targetPos) => {
-            const dx = targetPos.x - this.tank.positionData.values.x;
-            const dy = targetPos.y - this.tank.positionData.values.y;
-            return (dx * dx + dy * dy) <= this.ai.viewRange ** 2;
+            const entities = this.game.entities.collisionManager.retrieve(targetPos.x, targetPos.y, 1, 1);
+            for (let i = 0; i < entities.length; ++i) {
+                const entity = entities[i];
+                if (entity.positionData.values === targetPos && 'inputs' in entity && 'cameraEntity' in entity) {
+                    return true;
+                }
+            }
+            return false;
         };
-        this.ai.movementSpeed = this.ai.aimSpeed = this.baseAccel;
+        this.ai.doAimPrediction = true;  // 启用目标预测
     }
 
     private setupDronePhysics(bulletDefinition: any): void {
@@ -299,8 +304,18 @@ export default class TankProjectile extends Bullet implements BarrelBase {
             
         const inputs = !usingAI ? this.tank.inputs : this.ai.inputs;
 
-        if (usingAI && this.ai.state === AIState.idle) {
-            this.handleIdleDrone();
+        if (usingAI) {
+            // 当AI状态为idle时，围绕玦家旋转
+            if (this.ai.state === AIState.idle) {
+                this.handleIdleDrone();
+            } else {
+                // 当AI找到目标时，使用AI的输入来控制移动
+                this.positionData.angle = Math.atan2(
+                    this.ai.inputs.mouse.y - this.positionData.values.y,
+                    this.ai.inputs.mouse.x - this.positionData.values.x
+                );
+                this.restCycle = false;
+            }
         } else {
             this.handleActiveDrone(inputs);
         }
@@ -315,33 +330,18 @@ export default class TankProjectile extends Bullet implements BarrelBase {
 
         let unitDist = (delta.x ** 2 + delta.y ** 2) / TankProjectile.MAX_RESTING_RADIUS;
         if (unitDist <= 1 && this.restCycle) {
-            this.handleRestingDrone(unitDist);
+            this.baseAccel /= 6;
+            this.positionData.angle += 0.01 + 0.012 * unitDist;
         } else {
-            this.handleOrbitingDrone(delta);
+            const offset = Math.atan2(delta.y, delta.x) + Math.PI / 2;
+            delta.x = this.tank.positionData.values.x + Math.cos(offset) * this.tank.physicsData.values.size * 1.2 - this.positionData.values.x;
+            delta.y = this.tank.positionData.values.y + Math.sin(offset) * this.tank.physicsData.values.size * 1.2 - this.positionData.values.y;
+            this.positionData.angle = Math.atan2(delta.y, delta.x);
+            if (unitDist < 0.5) this.baseAccel /= 3;
+            this.restCycle = (delta.x ** 2 + delta.y ** 2) <= 4 * (this.tank.physicsData.values.size ** 2);
         }
 
         this.baseAccel = base;
-    }
-
-    private handleRestingDrone(unitDist: number): void {
-        this.baseAccel /= 6;
-        this.positionData.angle += 0.01 + 0.012 * unitDist;
-    }
-
-    private handleOrbitingDrone(delta: {x: number, y: number}): void {
-        const offset = Math.atan2(delta.y, delta.x) + Math.PI / 2;
-        delta.x = this.tank.positionData.values.x + 
-            Math.cos(offset) * this.tank.physicsData.values.size * 1.2 - 
-            this.positionData.values.x;
-        delta.y = this.tank.positionData.values.y + 
-            Math.sin(offset) * this.tank.physicsData.values.size * 1.2 - 
-            this.positionData.values.y;
-            
-        this.positionData.angle = Math.atan2(delta.y, delta.x);
-        
-        const distSq = delta.x ** 2 + delta.y ** 2;
-        if (distSq < 0.5) this.baseAccel /= 3;
-        this.restCycle = distSq <= 4 * (this.tank.physicsData.values.size ** 2);
     }
 
     private handleActiveDrone(inputs: Inputs): void {
