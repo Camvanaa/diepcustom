@@ -64,8 +64,8 @@ class FrozenEffect {
             (target as any).cameraEntity.cameraData.values.movementSpeed = 
                 this.originalSpeed! * (1 - totalSlowRatio);
             
-            console.log(`应用减速效果 - 目标: ${target.hash}, 层数: ${currentStacks}, 减速比例: ${totalSlowRatio}`);
-            console.log(`原始速度: ${this.originalSpeed}, 减速后速度: ${(target as any).cameraEntity.cameraData.values.movementSpeed}`);
+            //console.log(`应用减速效果 - 目标: ${target.hash}, 层数: ${currentStacks}, 减速比例: ${totalSlowRatio}`);
+            //console.log(`原始速度: ${this.originalSpeed}, 减速后速度: ${(target as any).cameraEntity.cameraData.values.movementSpeed}`);
         } else if (target.velocity) {
             // 子弹减速
             if (!FrozenEffect.originalSpeeds.has(target)) {
@@ -82,7 +82,7 @@ class FrozenEffect {
                 target.velocity.y *= scale;
             }
             
-            console.log(`应用子弹减速 - 目标: ${target.hash}, 层数: ${currentStacks}, 减速比例: ${totalSlowRatio}`);
+            //console.log(`应用子弹减速 - 目标: ${target.hash}, 层数: ${currentStacks}, 减速比例: ${totalSlowRatio}`);
         }
 
         this.interval = setInterval(() => {
@@ -94,21 +94,21 @@ class FrozenEffect {
                     
                     // 减少目标的减速层数
                     const currentStacks = (FrozenEffect.targetStacks.get(target) || 1) - 1;
-                    console.log(`效果结束 - 目标: ${target.hash}, 剩余层数: ${currentStacks}`);
+                    //console.log(`效果结束 - 目标: ${target.hash}, 剩余层数: ${currentStacks}`);
                     
                     if (currentStacks > 0) {
                         FrozenEffect.targetStacks.set(target, currentStacks);
                         const totalSlowRatio = Math.min(currentStacks * this.slowRatio, 0.9);
                         (this.target as any).cameraEntity.cameraData.values.movementSpeed = 
                             this.originalSpeed * (1 - totalSlowRatio);
-                        console.log(`更新减速 - 目标: ${target.hash}, 新速度: ${(this.target as any).cameraEntity.cameraData.values.movementSpeed}`);
+                        //console.log(`更新减速 - 目标: ${target.hash}, 新速度: ${(this.target as any).cameraEntity.cameraData.values.movementSpeed}`);
                     } else {
                         // 没有层数了，恢复原速并清理所有相关数据
                         (this.target as any).cameraEntity.cameraData.values.movementSpeed = this.originalSpeed;
                         FrozenEffect.activeEffects.delete(this.target);
                         FrozenEffect.targetStacks.delete(this.target);
                         FrozenEffect.originalSpeeds.delete(this.target);
-                        console.log(`完全恢复 - 目标: ${target.hash}, 恢复速度: ${this.originalSpeed}`);
+                        //console.log(`完全恢复 - 目标: ${target.hash}, 恢复速度: ${this.originalSpeed}`);
                     }
                 }
                 return;
@@ -122,7 +122,7 @@ class FrozenEffect {
                     const currentSpeed = (this.target as any).cameraEntity.cameraData.values.movementSpeed;
                     
                     if (Math.abs(currentSpeed - (this.originalSpeed * (1 - totalSlowRatio))) > 0.001) {
-                        console.log(`Tick更新 - 目标: ${this.target.hash}, 层数: ${currentStacks}, 当前速度: ${currentSpeed}, 新速度: ${this.originalSpeed * (1 - totalSlowRatio)}`);
+                        //console.log(`Tick更新 - 目标: ${this.target.hash}, 层数: ${currentStacks}, 当前速度: ${currentSpeed}, 新速度: ${this.originalSpeed * (1 - totalSlowRatio)}`);
                         (this.target as any).cameraEntity.cameraData.values.movementSpeed = this.originalSpeed * (1 - totalSlowRatio);
                     }
                 }
@@ -182,7 +182,7 @@ export default class Frozen extends Bullet {
         this.slowDuration = (barrel.definition.bullet.slowDuration || 20) * (1 + bulletHealth * 0);
         
         // 设置冰冻子弹的颜色为浅蓝色
-        this.styleData.values.color = Color.TeamBlue;
+        this.styleData.values.color =  Color.Frozen;
         this.styleData.values.flags |= StyleFlags.hasNoDmgIndicator;
     }
 

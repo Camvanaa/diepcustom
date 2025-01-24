@@ -847,7 +847,9 @@
             15,
             11,
             19,
-            31
+            31,
+            71,
+            73
         ],
         "flags": {
             "invisibility": false,
@@ -1942,9 +1944,7 @@
         "levelRequirement": 30,
         "upgrades": [
             22,
-            21,
-            71,
-            73
+            21
         ],
         "flags": {
             "invisibility": false,
@@ -3036,7 +3036,7 @@
                     "type": "bullet",
                     "sizeRatio": 1,
                     "health": 1,
-                    "damage": 1.05,
+                    "damage": 1.1,
                     "speed": 1,
                     "scatterRate": 1,
                     "lifeLength": 1,
@@ -8517,7 +8517,7 @@
         "speed": 1,
         "maxHealth": 50,
         "preAddon": null,
-        "postAddon": "pronounced",
+        "postAddon": null,
         "sides": 1,
         "borderWidth": 15,
         "barrels": [
@@ -8545,27 +8545,52 @@
                     "absorbtionFactor": 1
                 }
             },
+          {
+                "angle": 0,
+                "offset": 0,
+                "size": 100,
+                "width": 42,
+                "delay": 0,
+                "color": 7,
+                "reload": 2,
+                "recoil": 0.1,
+                "isTrapezoid": false,
+                "trapezoidDirection": 0,
+                "addon": null,
+                "droneCount": 0,
+                "canControlDrones": false,
+                "bullet": {
+                    "type": "drone",
+                    "sizeRatio": 1,
+                    "health": 1,
+                    "damage": 1,
+                    "speed": 1.4,
+                    "scatterRate": 1,
+                    "lifeLength": 1,
+                    "absorbtionFactor": 1
+                }
+            },
             {
                 "angle": 0,
                 "offset": 0,
                 "size": 140,
                 "width": 32,
                 "delay": 0,
-                "reload": 2,
+                "reload": 2.5,
                 "recoil": 1,
                 "isTrapezoid": false,
                 "trapezoidDirection": 0,
                 "addon": null,
                 "bullet": {
                     "type": "poison",
-                    "health": 2,
-                    "damage": 0.5,
+                    "health": 1.2,
+                    "damage": 0.35,
                     "speed": 1.5,
                     "scatterRate": 0.3,
                     "lifeLength": 1,
                     "absorbtionFactor": 1,
-                    "poisonDamage": 0.005,
-                    "poisonDuration": 1000
+                    "poisonDamage": 0.05,
+                    "poisonDuration": 25
                 }
             }
         ],
@@ -8642,11 +8667,11 @@
                 "droneCount": 2,
                 "canControlDrones": true,
                 "bullet": {
-                    "type": "minion",
-                    "sizeRatio": 1,
+                    "type": "contaminator",
+                    "sizeRatio": 0.8,
                     "health": 4,
                     "damage": 0.7,
-                    "speed": 0.56,
+                    "speed": 0.65,
                     "scatterRate": 1,
                     "lifeLength": -1,
                     "absorbtionFactor": 1
@@ -8666,11 +8691,11 @@
                 "droneCount": 2,
                 "canControlDrones": true,
                 "bullet": {
-                    "type": "minion",
-                    "sizeRatio": 1,
+                    "type": "contaminator",
+                    "sizeRatio": 0.8,
                     "health": 4,
                     "damage": 0.7,
-                    "speed": 0.56,
+                    "speed": 0.65,
                     "scatterRate": 1,
                     "lifeLength": -1,
                     "absorbtionFactor": 1
@@ -8690,11 +8715,11 @@
                 "droneCount": 2,
                 "canControlDrones": true,
                 "bullet": {
-                    "type": "minion",
-                    "sizeRatio": 1,
+                    "type": "contaminator",
+                    "sizeRatio": 0.8,
                     "health": 4,
                     "damage": 0.7,
-                    "speed": 0.56,
+                    "speed": 0.65,
                     "scatterRate": 1,
                     "lifeLength": -1,
                     "absorbtionFactor": 1
@@ -8756,15 +8781,62 @@
         "speed": 1,
         "maxHealth": 50,
         "preAddon": null,
-        "postAddon": "pronounced",
+        "postAddon": null,
         "sides": 1,
         "borderWidth": 15,
         "barrels": [
-                {
+      {
+                "angle": 0,
+                "offset": 0,
+                "size": 130,
+                "width": 30,
+                "delay": 0,
+                "reload": 2.5,
+                "recoil": 1,
+                "isTrapezoid": false,
+                "trapezoidDirection": 0,
+                "addon": null,
+                "bullet": {
+                    "type": "frozen",
+                    "health": 1,
+                    "damage": 0.35,
+                    "speed": 1.4,
+                    "scatterRate": 0.3,
+                    "lifeLength": 1,
+                    "absorbtionFactor": 1,
+                    "slowRatio": 0.2,
+                    "slowDuration": 30
+                }
+            },
+            {
                 "angle": 0,
                 "offset": 0,
                 "size": 120,
                 "width": 42,
+                "delay": 0.15,
+                "reload": 2.5,
+                "recoil": 1,
+                "isTrapezoid": false,
+                "trapezoidDirection": 0,
+                "addon": null,
+                "bullet": {
+                    "type": "frozen",
+                    "health": 1,
+                    "damage": 0.35,
+                    "speed": 1.4,
+                    "scatterRate": 0.3,
+                    "lifeLength": 1,
+                    "absorbtionFactor": 1,
+                    "slowRatio": 0.2,
+                    "slowDuration": 30
+                }
+            },
+          {
+                "angle": 0,
+                "offset": 0,
+                "size": 100,
+                "width": 24,
+                "color": 19,
                 "delay": 0,
                 "reload": 2,
                 "recoil": 0.1,
@@ -8783,29 +8855,6 @@
                     "lifeLength": 1,
                     "absorbtionFactor": 1
                 }
-            },
-            {
-                "angle": 0,
-                "offset": 0,
-                "size": 140,
-                "width": 32,
-                "delay": 0,
-                "reload": 2,
-                "recoil": 1,
-                "isTrapezoid": false,
-                "trapezoidDirection": 0,
-                "addon": null,
-                "bullet": {
-                    "type": "frozen",
-                    "health": 2,
-                    "damage": 0.5,
-                    "speed": 1.5,
-                    "scatterRate": 0.3,
-                    "lifeLength": 1,
-                    "absorbtionFactor": 1,
-                    "slowRatio": 0.3,
-                    "slowDuration": 60
-                }
             }
         ],
         "stats": [
@@ -8818,7 +8867,7 @@
                 "max": 7
             },
             {
-                "name": "Poison concentration",
+                "name": "Bullet Damage",
                 "max": 7
             },
             {

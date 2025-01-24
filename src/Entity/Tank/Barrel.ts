@@ -44,6 +44,7 @@ import Split from "./Projectile/Split";
 import RPG from "./Projectile/rpg";
 import Poison from "./Projectile/Poison";
 import Frozen from "./Projectile/Frozen";
+import Contaminator from "./Projectile/Contaminator";
 /**
  * Class that determines when barrels can shoot, and when they can't.
  */
@@ -71,7 +72,8 @@ export class ShootCycle {
         const alwaysShoot = (this.barrelEntity.definition.forceFire) || 
             (this.barrelEntity.definition.bullet.type === 'drone') || 
             (this.barrelEntity.definition.bullet.type === 'minion') || 
-            (this.barrelEntity.definition.bullet.type === 'rocketdrone');
+            (this.barrelEntity.definition.bullet.type === 'rocketdrone') ||
+            (this.barrelEntity.definition.bullet.type === 'contaminator');
 
         /*console.log('Barrel tick:', {
             pos: this.pos,
@@ -269,6 +271,9 @@ export default class Barrel extends ObjectEntity {
                 break;
             case 'minion':
                 new Minion(this, this.tank, tankDefinition, angle);
+                break;
+            case 'contaminator':
+                new Contaminator(this, this.tank, tankDefinition, angle);
                 break;
             case 'flame':
                 new Flame(this, this.tank, tankDefinition, angle);

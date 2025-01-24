@@ -28,7 +28,7 @@ export type preAddonId = "dombase" | "launcher"
 export type addonId = preAddonId | postAddonId | "autotwinsmasher";
 
 /** The types of projectiles in the game */
-export type projectileId = "bullet" | "drone" | "trap" | "necrodrone" | "minion" | "skimmer" | "rocket" | "swarm" | "flame" | "wall" | "croc" | "rocketdrone" | "tankprojectile" | "split" | "rpg" | "poison" | "frozen";
+export type projectileId = "bullet" | "drone" | "trap" | "necrodrone" | "minion" | "skimmer" | "rocket" | "swarm" | "flame" | "wall" | "croc" | "rocketdrone" | "tankprojectile" | "split" | "rpg" | "poison" | "frozen" | "contaminator";
 
 /** The types of barrel addons that exist in the game */
 export type barrelAddonId = "trapLauncher" | "purplebarrel" ;
@@ -41,7 +41,7 @@ export const visibilityRateDamage = 0.2;
  */
 export interface BulletDefinition {
     /** The type of the bullet that the barrel shoots. */
-    type: "bullet" | "trap" | "drone" | "necrodrone" | "swarm" | "minion" | "flame" | "wall" | "tank" | "skimmer" | "rocket" | "croc" | "rocketdrone" | "tankprojectile" | "split" | "rpg" | "poison" | "frozen";
+    type: "bullet" | "trap" | "drone" | "necrodrone" | "swarm" | "minion" | "flame" | "wall" | "tank" | "skimmer" | "rocket" | "croc" | "rocketdrone" | "tankprojectile" | "split" | "rpg" | "poison" | "frozen" | "contaminator";
     /** Size of the bullet shot out of the barrel in relation to the barrel's size. */
     sizeRatio?: number;
     /** Used to calculate the health of the bullet that the barrel shoots. */
