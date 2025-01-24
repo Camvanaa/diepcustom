@@ -41,6 +41,9 @@ import TankProjectile from "./Projectile/Tank";
 import TankDefinitions from "../../Const/TankDefinitions.json";
 import { DevTank } from "../../Const/DevTankDefinitions";
 import Split from "./Projectile/Split";
+import RPG from "./Projectile/rpg";
+import Poison from "./Projectile/Poison";
+import Frozen from "./Projectile/Frozen";
 /**
  * Class that determines when barrels can shoot, and when they can't.
  */
@@ -234,6 +237,15 @@ export default class Barrel extends ObjectEntity {
             case "rocket":
                 new Rocket(this, this.tank, tankDefinition, angle);
                 break;
+            case 'rpg':
+                const splitParams = {
+                    maxSplitCount: this.definition.bullet.splitParams?.maxSplitCount,
+                    splitBulletCount: this.definition.bullet.splitParams?.splitBulletCount,
+                    splitAngle: this.definition.bullet.splitParams?.splitAngle,
+                    sizeRatio: this.definition.bullet.splitParams?.sizeRatio
+                };
+                new RPG(this, this.tank, tankDefinition, angle, splitParams);
+                break;
             case 'bullet': {
                 const bullet = new Bullet(this, this.tank, tankDefinition, angle);
 
@@ -281,6 +293,12 @@ export default class Barrel extends ObjectEntity {
                 new Split(this, this.tank, tankDefinition, angle, splitParams);
                 break;
             }
+            case 'poison':
+                new Poison(this, this.tank, tankDefinition, angle);
+                break;
+            case 'frozen':
+                new Frozen(this, this.tank, tankDefinition, angle);
+                break;
             default:
                 util.log('Ignoring attempt to spawn projectile of type ' + this.definition.bullet.type);
                 break;
