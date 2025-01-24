@@ -56,13 +56,33 @@ class FrozenEffect {
         this.originalSpeed = originalSpeed || 0;
         
         if ((target as any).cameraEntity?.cameraData) {
+            // 玩家减速
+            this.originalSpeed = ((target as any).cameraEntity.cameraData.values.movementSpeed as number) || 0;
+            
             // 使用层数计算减速效果
             const totalSlowRatio = Math.min(currentStacks * slowRatio, 0.9);
             (target as any).cameraEntity.cameraData.values.movementSpeed = 
-                originalSpeed! * (1 - totalSlowRatio);
+                this.originalSpeed! * (1 - totalSlowRatio);
             
             console.log(`应用减速效果 - 目标: ${target.hash}, 层数: ${currentStacks}, 减速比例: ${totalSlowRatio}`);
-            console.log(`原始速度: ${originalSpeed}, 减速后速度: ${(target as any).cameraEntity.cameraData.values.movementSpeed}`);
+            console.log(`原始速度: ${this.originalSpeed}, 减速后速度: ${(target as any).cameraEntity.cameraData.values.movementSpeed}`);
+        } else if (target.velocity) {
+            // 子弹减速
+            if (!FrozenEffect.originalSpeeds.has(target)) {
+                const speed = Math.hypot(target.velocity.x, target.velocity.y);
+                FrozenEffect.originalSpeeds.set(target, speed);
+            }
+            this.originalSpeed = FrozenEffect.originalSpeeds.get(target)!;
+            
+            const totalSlowRatio = Math.min(currentStacks * slowRatio, 0.9);
+            const currentSpeed = Math.hypot(target.velocity.x, target.velocity.y);
+            if (currentSpeed > 0) {
+                const scale = (this.originalSpeed * (1 - totalSlowRatio)) / currentSpeed;
+                target.velocity.x *= scale;
+                target.velocity.y *= scale;
+            }
+            
+            console.log(`应用子弹减速 - 目标: ${target.hash}, 层数: ${currentStacks}, 减速比例: ${totalSlowRatio}`);
         }
 
         this.interval = setInterval(() => {
@@ -94,17 +114,28 @@ class FrozenEffect {
                 return;
             }
 
-            // 只在还有减速效果时更新
+            // 每个tick都重新应用减速效果
             if ((this.target as any).cameraEntity?.cameraData && this.target.hash !== 0) {
                 const currentStacks = FrozenEffect.targetStacks.get(this.target) || 0;
                 if (currentStacks > 0) {
                     const totalSlowRatio = Math.min(currentStacks * this.slowRatio, 0.9);
-                    const newSpeed = this.originalSpeed * (1 - totalSlowRatio);
                     const currentSpeed = (this.target as any).cameraEntity.cameraData.values.movementSpeed;
                     
-                    if (Math.abs(currentSpeed - newSpeed) > 0.001) {
-                        console.log(`Tick更新 - 目标: ${this.target.hash}, 层数: ${currentStacks}, 当前速度: ${currentSpeed}, 新速度: ${newSpeed}`);
-                        (this.target as any).cameraEntity.cameraData.values.movementSpeed = newSpeed;
+                    if (Math.abs(currentSpeed - (this.originalSpeed * (1 - totalSlowRatio))) > 0.001) {
+                        console.log(`Tick更新 - 目标: ${this.target.hash}, 层数: ${currentStacks}, 当前速度: ${currentSpeed}, 新速度: ${this.originalSpeed * (1 - totalSlowRatio)}`);
+                        (this.target as any).cameraEntity.cameraData.values.movementSpeed = this.originalSpeed * (1 - totalSlowRatio);
+                    }
+                }
+            } else if (this.target.velocity && this.target.hash !== 0) {
+                const currentStacks = FrozenEffect.targetStacks.get(this.target) || 0;
+                if (currentStacks > 0) {
+                    const totalSlowRatio = Math.min(currentStacks * this.slowRatio, 0.9);
+                    const currentSpeed = Math.hypot(this.target.velocity.x, this.target.velocity.y);
+                    if (currentSpeed > 0) {
+                        const targetSpeed = this.originalSpeed * (1 - totalSlowRatio);
+                        const scale = targetSpeed / currentSpeed;
+                        this.target.velocity.x *= scale;
+                        this.target.velocity.y *= scale;
                     }
                 }
             }
