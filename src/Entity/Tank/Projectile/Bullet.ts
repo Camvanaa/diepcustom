@@ -88,9 +88,14 @@ export default class Bullet extends LivingEntity {
 
         this.baseAccel = barrel.bulletAccel;
         this.baseSpeed = barrel.bulletAccel + 30 - Math.random() * bulletDefinition.scatterRate;
+        // 原公式：(1.5 * bulletPenetration + 2) * bulletDefinition.health
+        // 新公式：使用平方根，在7和10点时达到原来的1.015倍
+        const penetrationFactor = 2 + 15 * (1.015) * Math.sqrt(bulletPenetration / 10);
+        this.healthData.values.health = this.healthData.values.maxHealth = penetrationFactor * bulletDefinition.health;
 
-        this.healthData.values.health = this.healthData.values.maxHealth = (1.5 * bulletPenetration + 2) * bulletDefinition.health;
-        this.damagePerTick = (7 + bulletDamage * 3) * bulletDefinition.damage;
+        // 原公式：(7 + bulletDamage * 3) * bulletDefinition.damage
+        // 新公式：使用平方根，在7和10点时达到原来的1.015倍
+        this.damagePerTick = (7 + 30 * (1.015) * Math.sqrt(bulletDamage / 10)) * bulletDefinition.damage;
         this.damageReduction = 0.25;
 
         this.lifeLength = bulletDefinition.lifeLength * 72;

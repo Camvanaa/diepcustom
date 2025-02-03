@@ -42,8 +42,8 @@ const SkimmerBarrelDefinition: BarrelDefinition = {
     bullet: {
         type: "bullet",
         sizeRatio: 1,
-        health: 0.3,
-        damage: 0.6,
+        health: 0.45,
+        damage: 0.65,
         speed: 0.7,
         scatterRate: 1,
         lifeLength: 1,

@@ -370,6 +370,69 @@ const CUSTOM_ADDONS = {
         rect2.physicsData.width = entity.physicsData.width * 1.25;
         rect2.physicsData.size = entity.physicsData.size * (35 / 50);
         rect2.positionData.x = (-entity.physicsData.size + rect2.physicsData.size) / 2;
+    },
+    "megasmasher": entity => {
+        if(!(entity instanceof $Entity)) return;
+        const hexx = entity.createChild(false);
+        hexx.defaults();
+        hexx.physicsData.sides = 6;
+        hexx.styleData.color = 0;
+        hexx.physicsData.size = entity.physicsData.size * 1.1;
+        hexx.physicsData.width = entity.physicsData.width * 0.3;
+    },
+    "cell": entity => {
+        if(!(entity instanceof $Entity)) return;
+        // 创建6个旋转的防护罩
+        const angles = [0, Math.PI/12, Math.PI/6, Math.PI/4, Math.PI/3, Math.PI/2];
+        
+        angles.forEach(angle => {
+            const guard = entity.createChild(false);
+            guard.defaults();
+            guard.physicsData.sides = 6;
+            guard.styleData.color = 0;  // 空心黑色边框
+            guard.physicsData.size = entity.physicsData.size * 0.8;  // 与中心六边形相同大小
+            guard.styleData.showsAboveParent = false;
+            guard.positionData.angle = angle;  // 设置初始角度
+            guard.positionData.isAngleAbsolute = true;
+        });
+    },
+    "autotwinsmasher": entity => {
+        if(!(entity instanceof $Entity)) return;
+        
+        // 创建防护罩
+        const hexx = entity.createChild(false);
+        hexx.defaults();
+        hexx.physicsData.sides = 6;
+        hexx.styleData.color = 0;
+        hexx.physicsData.size = entity.physicsData.size * 0.8;
+        hexx.physicsData.width = entity.physicsData.width * 0.3;
+        
+        
+        
+        // 创建两个炮管
+        const barrelDefinitions = [
+            { offset: -12, delay: 0 },
+            { offset: 12, delay: 0.25 }
+        ];
+        
+        barrelDefinitions.forEach(def => {
+            const barrel = entity.createChild(true);
+            barrel.defaults();
+            barrel.physicsData.size = 45;
+            barrel.physicsData.sides = 2;
+            barrel.physicsData.width = 25;
+            barrel.positionData.y = def.offset;
+            barrel.positionData.x = 22.5;
+            barrel.styleData.color = 1;  // Color.Barrel
+            barrel.styleData.showsAboveParent = true;
+        });
+
+        // 创建自动双管炮塔的底座
+        const base = entity.createChild(false);
+        base.defaults();
+        base.physicsData.size = 25;
+        base.styleData.color = 1;  // Color.Barrel
+        base.styleData.showsAboveParent = true;
     }
 }
 

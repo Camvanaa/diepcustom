@@ -96,7 +96,7 @@ export class CameraEntity extends Entity {
                     this.cameraData.levelbarProgress = score - levelScore;
                 }
 
-                this.cameraData.movementSpeed = player.definition.speed * 2.55 * Math.pow(1.07, this.cameraData.values.statLevels.values[Stat.MovementSpeed]) / Math.pow(1.015, this.cameraData.values.level - 1)
+                this.cameraData.movementSpeed = player.definition.speed * 2.55 * (1 + 0.95 * Math.sqrt(this.cameraData.values.statLevels.values[Stat.MovementSpeed] / 10)) / Math.pow(1.015, this.cameraData.values.level - 1);
             }
         } else {
             this.cameraData.flags |= CameraFlags.usesCameraCoords;
@@ -124,7 +124,7 @@ export default class ClientCamera extends CameraEntity {
         if (level <= 0) return 0;
         if (level <= 28) return level - 1;
 
-        return Math.floor(level / 3) + 18;
+        return Math.floor(level / 2.5) + 17;
     }
 
     public constructor(game: GameServer, client: Client) {

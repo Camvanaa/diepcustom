@@ -27,11 +27,11 @@ import { CameraEntity } from "../../../Native/Camera";
         damage: 0.01,
         speed: 1,
         scatterRate: 1,
-        lifeLength: 0.17,
+        lifeLength: 0.3,
         sizeRatio: 1,
         absorbtionFactor: 1,
         poisonDamage: 0.00075,
-        poisonDuration: 2
+        poisonDuration: 30
     }
 };
 

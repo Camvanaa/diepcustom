@@ -302,24 +302,30 @@ export default class TankBody extends LivingEntity implements BarrelBase {
 
         // Update stat related
         updateStats: {
-            // Damage
-            this.damagePerTick = this.cameraEntity.cameraData.statLevels[Stat.BodyDamage] * 6 + 20;
+            // Damage - 原公式: statLevel * 6 + 20
+            // 新公式: 使用平方根，在7和10点时达到原来的1.015倍
+            
+            this.damagePerTick = (20 + 6 * 10 * Math.sqrt(this.cameraEntity.cameraData.statLevels[Stat.BodyDamage] / 10));
             if (this._currentTank === Tank.Spike) this.damagePerTick *= 1.5;
 
             // Max Health
+            const baseMaxHealth = this.definition.maxHealth + 2 * (this.cameraEntity.cameraData.values.level - 1);
             const maxHealthCache = this.healthData.values.maxHealth;
-
-            this.healthData.maxHealth = this.definition.maxHealth + 2 * (this.cameraEntity.cameraData.values.level - 1) + this.cameraEntity.cameraData.values.statLevels.values[Stat.MaxHealth] * 20;
-            if (this.healthData.values.health === maxHealthCache) this.healthData.health = this.healthData.maxHealth; // just in case
-            else if (this.healthData.values.maxHealth !== maxHealthCache) {
-                this.healthData.health *= this.healthData.values.maxHealth / maxHealthCache
+            
+            this.healthData.maxHealth = baseMaxHealth + 20 * 10 * Math.sqrt(this.cameraEntity.cameraData.values.statLevels.values[Stat.MaxHealth] / 10);
+            
+            // 保持生命值比例
+            if (this.healthData.values.health === maxHealthCache) {
+                this.healthData.health = this.healthData.maxHealth;
+            } else if (this.healthData.values.maxHealth !== maxHealthCache) {
+                this.healthData.health *= this.healthData.values.maxHealth / maxHealthCache;
             }
 
             // Regen
-            this.regenPerTick = (this.healthData.values.maxHealth * 4 * this.cameraEntity.cameraData.values.statLevels.values[Stat.HealthRegen] + this.healthData.values.maxHealth) / 25000;
+            this.regenPerTick = (this.healthData.values.maxHealth * (1 + 56 * Math.pow(this.cameraEntity.cameraData.values.statLevels.values[Stat.HealthRegen] / 10, 0.25))) / 100000;
 
             // Reload
-            this.reloadTime = 15 * Math.pow(0.914, this.cameraEntity.cameraData.values.statLevels.values[Stat.Reload]);
+            this.reloadTime = 15 * (1 - 0.5666 * Math.pow(this.cameraEntity.cameraData.values.statLevels.values[Stat.Reload] / 10, 0.25));
         }
 
         this.scoreData.score = this.cameraEntity.cameraData.values.score;

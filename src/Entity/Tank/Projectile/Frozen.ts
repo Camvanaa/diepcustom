@@ -12,7 +12,7 @@ class FrozenEffect {
     private endTick!: number;
     private slowRatio!: number;
     private game!: any;
-    private source!: Frozen;
+    private source!: Bullet;
     private interval!: NodeJS.Timeout;
     private originalSpeed!: number;
 
@@ -23,7 +23,7 @@ class FrozenEffect {
     // 存储每个目标的原始速度
     private static originalSpeeds = new Map<LivingEntity, number>();
 
-    constructor(target: LivingEntity, endTick: number, slowRatio: number, source: Frozen) {
+    constructor(target: LivingEntity, endTick: number, slowRatio: number, source: Bullet) {
         let targetEffects = FrozenEffect.activeEffects.get(target);
         if (targetEffects?.has(source.hash)) {
             return;
@@ -200,4 +200,6 @@ export default class Frozen extends Bullet {
         // This code will be reimplemented in the update that allows for easy camera entity switches
         if ((this.relationsData.values.team?.entityState || 0) & EntityStateFlags.needsDelete) this.relationsData.values.team = null
     }
-} 
+}
+
+export { FrozenEffect }; 

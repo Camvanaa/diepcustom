@@ -68,8 +68,8 @@ export default class Split extends Bullet {
         this.damageReduction = 0.25;
         
         // 设置速度和加速度
-        this.baseAccel = barrel.bulletAccel;
-        this.baseSpeed = barrel.bulletAccel + 30 - Math.random() * bulletDefinition.scatterRate;
+        this.baseAccel = 0.3 * barrel.bulletAccel;  // 使速度衰减
+        this.baseSpeed = 2 * (barrel.bulletAccel + 30 - Math.random() * bulletDefinition.scatterRate);  // 提高初始速度
         
         // 设置物理属性
         this.physicsData.values.absorbtionFactor = bulletDefinition.absorbtionFactor;

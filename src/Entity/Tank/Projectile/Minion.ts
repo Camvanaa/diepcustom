@@ -41,8 +41,8 @@ import { CameraEntity } from "../../../Native/Camera";
     addon: null,
     bullet: {
         type: "bullet",
-        health: 0.4,
-        damage: 0.4,
+        health: 0.45,
+        damage: 0.5,
         speed: 0.8,
         scatterRate: 1,
         lifeLength: 1,

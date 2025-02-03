@@ -45,6 +45,7 @@ import RPG from "./Projectile/rpg";
 import Poison from "./Projectile/Poison";
 import Frozen from "./Projectile/Frozen";
 import Contaminator from "./Projectile/Contaminator";
+import FrozenTrap from "./Projectile/FrozenTrap";
 /**
  * Class that determines when barrels can shoot, and when they can't.
  */
@@ -171,7 +172,7 @@ export default class Barrel extends ObjectEntity {
         this.barrelData.values.trapezoidDirection = barrelDefinition.trapezoidDirection;
         this.shootCycle = new ShootCycle(this);
 
-        this.bulletAccel = (20 + (owner.cameraEntity.cameraData?.values.statLevels.values[Stat.BulletSpeed] || 0) * 3) * barrelDefinition.bullet.speed;
+        this.bulletAccel = (20 + 30 * Math.sqrt(this.tank.cameraEntity.cameraData?.values.statLevels.values[Stat.BulletSpeed] / 10 || 0)) * this.definition.bullet.speed;
     }
 
     /** Shoots a bullet from the barrel. */
@@ -257,6 +258,9 @@ export default class Barrel extends ObjectEntity {
             case 'trap':
                 new Trap(this, this.tank, tankDefinition, angle);
                 break;
+            case 'frozenTrap':
+                new FrozenTrap(this, this.tank, tankDefinition, angle);
+                break;
             case 'drone':
                 new Drone(this, this.tank, tankDefinition, angle);
                 break;
@@ -323,7 +327,7 @@ export default class Barrel extends ObjectEntity {
         this.positionData.y = Math.sin(this.definition.angle) * (size / 2 + (this.definition.distance || 0)) + Math.cos(this.definition.angle) * this.definition.offset * sizeFactor;
 
         // Updates bullet accel too
-        this.bulletAccel = (20 + (this.tank.cameraEntity.cameraData?.values.statLevels.values[Stat.BulletSpeed] || 0) * 3) * this.definition.bullet.speed;
+        this.bulletAccel = (20 + 30 * (1.015) * Math.sqrt(this.tank.cameraEntity.cameraData?.values.statLevels.values[Stat.BulletSpeed] / 10 || 0)) * this.definition.bullet.speed;
     }
 
     public tick(tick: number) {
